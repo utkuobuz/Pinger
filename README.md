@@ -1,79 +1,94 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 🚨 Pinger Pro: Endüstriyel IP Altyapı İzleme Sistemi
 
-# Getting Started
+Pinger Pro, kritik sunucuların, network cihazlarının (Switch, Router vb.) ve kurumsal web servislerinin kesintisizliğini (Uptime) kilitli ekranda dahi saniyesi saniyesine takip eden, **React Native** ile geliştirilmiş profesyonel bir Android izleme yazılımıdır. 
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+Geleneksel uygulamaların aksine, Android 14 ve 15 işletim sistemlerinin katı batarya politikalarını (Deep Sleep / Doze Mode) resmi **Ön Plan Servisleri (Foreground Services)** ile delerek kesintisiz ve kırılmaz bir izleme altyapısı sunar.
 
-## Step 1: Start the Metro Server
+---
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## ✨ Öne Çıkan Özellikler
 
-To start Metro, run the following command from the _root_ of your React Native project:
+- **🛡️ Android Doze Modu ve Derin Uyku Kalkanı:** İşletim sisteminin arka planda interneti ve işlemciyi kapatmasını engellemek için `dataSync` türünde resmi Android Ön Plan Servisi kullanır. Cihaz kilitliyken ve masada hareketsizken bile takibe devam eder.
+- **🚨 Akıllı Siren ve Kilitli Ekran Bildirimleri:** Bir cihaz çöktüğü an, telefonun varsayılan bildirim sesi yerine `res/raw` dizinine gömülü özel `siren.mp3` dosyasını `HIGH_IMPORTANCE` kanalından çalar. Ekran kapalıysa otomatik olarak aydınlatır.
+- **⏱️ ANR (Uygulama Yanıt Vermiyor) Koruması:** `react-native-ping` kütüphanesinin arka planda internet kesildiğinde kilitlenme eğilimini yok eden, özel geliştirilmiş Promise tabanlı **Zırhlı Ping (`safePing`)** mimarisine sahiptir.
+- **⏸️ Cihaz Bazlı Duraklatma (Pause/Resume):** Bakıma alınan veya geçici olarak kapatılan sunucuları listeden silmeden tek tuşla takipten muaf tutabilirsiniz.
+- **📊 7 Günlük Gelişmiş UI/UX Günlük Raporu (Logs):** Yapılan tüm taramaları başarılı/başarısız durumuna göre renk kodlu kartlarla yerel veri tabanında (`AsyncStorage`) saklar. IP kartına tıklandığında modern bir alt pencere (Modal) ile açılır.
+- **🧹 Otomatik Bellek Temizleyici (Garbage Collection):** Telefonun hafızasını şişirmemek için 7 günü geçen eski tarama loglarını arka planda otomatik olarak tespit eder ve sessizce kazır.
 
+---
+
+## 🛠️ Teknik Mimari ve Teknolojiler
+
+- **Framework:** React Native (TypeScript)
+- **Arka Plan Yönetimi:** `@notifee/react-native` (Foreground Service & Android Channels)
+- **Ağ Katmanı:** `react-native-ping` (ICMP Ağ Paket Seviyesi)
+- **Veri Yönetimi:** `@react-native-async-storage/async-storage` (Lokal Hafıza)
+- **Gelişmiş Algoritma (Mikro Sleep):** 5 dakikalık periyodik tarama döngüsü, servis arayüzden kapatıldığı an beklemeyi iptal edip **milisaniyeler içinde durmasını sağlayan** iptal edilebilir mikro-uyku (`wakeUpFunction`) yapısıyla kurulmuştur.
+
+---
+
+## 🚀 Kurulum ve Çalıştırma
+
+### 1. Gereksinimler
+- Node.js (v18+)
+- Android Studio & JDK 17
+- Fiziksel bir Android cihaz (Tercihen Samsung S22 Ultra veya muadili modern Android 14/15 cihaz)
+
+### 2. Projeyi Klonlayın ve Bağımlılıkları Kurun
 ```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
+git clone [https://github.com/utkuobuz/Pinger.git](https://github.com/utkuobuz/Pinger.git)
+cd Pinger/IPTakipApp
+npm install
 ```
 
-## Step 2: Start your Application
+### 3. Medya Dosyalarının Yerleştirilmesi (Kritik Adım)
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+Özel siren sesinin ve logoların Android işletim sistemi tarafından paketlenebilmesi için aşağıdaki dosyaları belirtilen dizine eklemelisiniz:
 
-### For Android
+Siren Sesi: android/app/src/main/res/raw/siren.mp3 (Dosya adı tamamen küçük harf olmalıdır).
+
+Uygulama İkonu/Medya: android/app/src/main/res/raw/p_icon.jpg
+
+## 📦 Yapılandırma ve Derleme
+
+Hata Ayıklama (Debug) Modu
 
 ```bash
-# using npm
+cd android
+.\gradlew clean
+cd ..
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### For iOS
+## Yayın / Test Kullanıcıları İçin APK Üretimi (Release)
+
+Antivirüslerin (Avast vb.) sahte pozitif (False Positive) virüs uyarısı vermesini engellemek ve şifreli bir sertifika ile paketlemek için:
 
 ```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+cd android
+.\gradlew assembleRelease
 ```
+Üretilen kurulabilir Release APK dosyasını şu dizinde bulabilirsiniz:
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+android/app/build/outputs/apk/release/app-release.apk
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+# 📝 Önemli Geliştirici Notları (Android 14/15 İzinleri)
 
-## Step 3: Modifying your App
+## Uygulamanın kesintisiz çalışabilmesi için AndroidManifest.xml dosyasında aşağıdaki izinlerin tanımlı olması şarttır:
 
-Now that you have successfully run the app, let's modify it.
+``` XML
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+```
+Ayrıca en yüksek kararlılık için, telefondan Ayarlar -> Uygulamalar -> Pinger Pro -> Pil menüsünden pil modunu "Kısıtlamasız (Unrestricted)" olarak ayarlamanız önerilir.
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+⚡ Utku Obuz tarafından kurumsal altyapı güvenliği ve izleme ihtiyaçları için geliştirilmiştir.
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+### Şimdi Yapılacak Adımlar:
 
-## Congratulations! :tada:
+1. Bu düzeltilmiş içeriği tarayıcından GitHub'daki `README.md` dosyana yapıştırıp **Commit changes** diyerek kaydet.
+2. Ardından Cursor terminaline dönüp o senkronizasyon komutunu tekrar çalıştır:
 
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+   ```bash
+   git pull origin main
+   ```
